@@ -1,0 +1,84 @@
+import { Recipe } from "./types"
+
+
+
+const searchRecipes = async(searchTerm:string, page:number) => {
+    
+    const baseUrl = new URL("http://localhost:5000/api/recipes/search")    
+    baseUrl.searchParams.append("searchTerm", searchTerm)
+    baseUrl.searchParams.append("page", String(page))
+    const reposnse = await fetch(baseUrl)
+    
+    if (!reposnse.ok) {
+        throw new Error(`HTTP error! Status: ${reposnse.status}`)
+    }
+    return await reposnse.json();
+}
+
+const getRecipeSummary = async(recipeId:number) => {
+    const baseUrl = new URL(`http://localhost:5000/api/recipes/${recipeId}/summary`)
+    const response = await fetch(baseUrl)
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`)
+    }
+
+    return await response.json();
+}
+
+const getFavouriteRecipes = async () => {
+    const baseUrl = new URL('http://localhost:5000/api/recipes/favourites')
+    const response = await fetch(baseUrl)
+
+    if (!response.ok) {
+        throw new Error(`Oops something went wrong while getting your favourite recipes`)
+    }
+
+    return await response.json()
+}
+
+const addFaveRecipes = async(recipe: Recipe) => {
+    const baseUrl = new URL('http://localhost:5000/api/recipes/favourites')
+    const body = {
+        recipeId: recipe.id
+    }
+    const response = await fetch(baseUrl, {
+        method:'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+    })
+
+    if (!response.ok) {
+        throw new Error(`Oops something went wrong`)
+    }
+}
+
+const removeFaveRecipe = async(recipe: Recipe) => {
+    const baseUrl = new URL('http://localhost:5000/api/recipes/favourites')
+    const body = {
+        recipeId: recipe.id
+    }
+    const response = await fetch(baseUrl, {
+        method:'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+    })
+
+    if (!response.ok) {
+        throw new Error(`Oops something went wrong`)
+    }
+}
+
+const api = {
+    searchRecipes,
+    getRecipeSummary,
+    getFavouriteRecipes,
+    addFaveRecipes,
+    removeFaveRecipe
+}
+
+export default api
